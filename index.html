@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sip &amp; Style | Build your own drink</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bagel+Fat+One&family=Outfit:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+  <!-- CSS linked here -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header class="top">
+    <h1>Sip &amp; Style</h1>
+    <p>Pick a drink, add toppings, and watch your cup fill up.</p>
+  </header>
+
+  <main class="builder">
+
+    <!-- ============ LEFT: CONTROLS ============ -->
+    <section class="controls" aria-label="Customize your drink">
+
+      <fieldset>
+        <legend>1. Pick a drink</legend>
+        <div id="baseGrid" class="base-grid"></div>
+      </fieldset>
+
+      <fieldset>
+        <legend>2. Choose a size</legend>
+        <div class="segs">
+          <label class="seg"><input type="radio" name="size" value="S"><span>Small<small>350 ml</small></span></label>
+          <label class="seg"><input type="radio" name="size" value="M" checked><span>Medium<small>500 ml</small></span></label>
+          <label class="seg"><input type="radio" name="size" value="L"><span>Large<small>700 ml</small></span></label>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>3. Sweetness &amp; ice</legend>
+        <div class="sugar-row">
+          <label for="sugar">Sweetness</label>
+          <output id="sugarOut" for="sugar">50% · Half sweet</output>
+        </div>
+        <input type="range" id="sugar" min="0" max="100" step="25" value="50">
+
+        <div class="segs ice">
+          <label class="seg"><input type="radio" name="ice" value="none"><span>No ice</span></label>
+          <label class="seg"><input type="radio" name="ice" value="less"><span>Less ice</span></label>
+          <label class="seg"><input type="radio" name="ice" value="normal" checked><span>Regular</span></label>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>4. Add toppings</legend>
+        <div class="toolbar">
+          <div class="chips" role="group" aria-label="Filter toppings">
+            <button type="button" class="chip" data-filter="all" aria-pressed="true">All</button>
+            <button type="button" class="chip" data-filter="chewy" aria-pressed="false">Chewy</button>
+            <button type="button" class="chip" data-filter="fruity" aria-pressed="false">Fruity</button>
+            <button type="button" class="chip" data-filter="creamy" aria-pressed="false">Creamy</button>
+          </div>
+          <input type="search" id="search" placeholder="Search toppings" aria-label="Search toppings">
+        </div>
+        <ul id="toppingList" class="topping-list"></ul>
+        <p id="emptyMsg" class="empty" hidden>
+          No toppings match. <button type="button" id="clearFilter" class="link">Clear filters</button>
+        </p>
+      </fieldset>
+    </section>
+
+    <!-- ============ CENTER: LIVE CUP ============ -->
+    <section class="stage" aria-label="Live preview of your drink">
+      <div class="cup-wrap" id="cupWrap">
+        <svg id="cup" viewBox="0 0 200 330" role="img" aria-label="Your custom drink">
+          <defs>
+            <clipPath id="cupClip">
+              <path d="M40 70 L160 70 L142 308 Q141 314 134 314 L66 314 Q59 314 58 308 Z"/>
+            </clipPath>
+            <linearGradient id="liqGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop id="stopA" offset="0" stop-color="#b88a68"/>
+              <stop id="stopB" offset="1" stop-color="#6b4328"/>
+            </linearGradient>
+            <linearGradient id="foamGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#fffdf5"/>
+              <stop offset="1" stop-color="#f3e3bb"/>
+            </linearGradient>
+            <linearGradient id="glassGrad" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0" stop-color="#fff" stop-opacity=".45"/>
+              <stop offset=".3" stop-color="#fff" stop-opacity=".05"/>
+              <stop offset=".8" stop-color="#fff" stop-opacity=".05"/>
+              <stop offset="1" stop-color="#fff" stop-opacity=".3"/>
+            </linearGradient>
+          </defs>
+
+          <ellipse cx="100" cy="322" rx="58" ry="6" fill="#2a1b3d" opacity=".18"/>
+
+          <!-- Everything inside the cup is clipped to the cup shape -->
+          <g clip-path="url(#cupClip)">
+            <rect id="liquid" x="20" y="86" width="160" height="240" fill="url(#liqGrad)"/>
+            <g id="gSyrup"></g>
+            <g id="gPudding"></g>
+            <g id="gPearl"></g>
+            <g id="gJelly"></g>
+            <g id="gLychee"></g>
+            <g id="gPop"></g>
+            <g id="gIce"></g>
+            <g id="gFoam"></g>
+          </g>
+
+          <!-- Glass, lid and straw -->
+          <path d="M40 70 L160 70 L142 308 Q141 314 134 314 L66 314 Q59 314 58 308 Z"
+                fill="url(#glassGrad)" stroke="#fff" stroke-width="3" stroke-linejoin="round"/>
+          <path d="M40 70 L160 70 L142 308 Q141 314 134 314 L66 314 Q59 314 58 308 Z"
+                fill="none" stroke="#2a1b3d" stroke-opacity=".28" stroke-width="1" stroke-linejoin="round"/>
+          <path d="M52 92 L63 280" stroke="#fff" stroke-opacity=".6" stroke-width="5" stroke-linecap="round" fill="none"/>
+          <rect x="33" y="60" width="134" height="12" rx="6" fill="#fff" fill-opacity=".7" stroke="#2a1b3d" stroke-opacity=".3"/>
+          <g transform="rotate(7 130 66)">
+            <rect x="124" y="4" width="11" height="252" rx="5.5" fill="#ff5c8a"/>
+            <line x1="129.5" y1="8" x2="129.5" y2="252" stroke="#fff" stroke-width="3" stroke-dasharray="7 11" opacity=".55"/>
+          </g>
+        </svg>
+      </div>
+
+      <h2 id="drinkName">Cold Coffee</h2>
+
+      <!-- ratings of THIS drink (everyone's average + your own rating) -->
+      <div class="rate-line" id="rateLine">
+        <span class="stars" id="rlStars" style="--p:0" role="img" aria-label="Average rating"></span>
+        <span id="rlText"></span>
+        <span class="mine-chip" id="rlMine"></span>
+        <button type="button" class="link" id="seeReviews">See reviews</button>
+        <button type="button" class="link" id="seeReviews">See reviews</button>
+<button type="button" class="btn small primary feedback-open">Give feedback</button>
+      </div>
+
+      <p id="drinkTops" class="meta tops"></p>
+      <p id="drinkMeta" class="meta"></p>
+
+      <div class="stage-actions">
+        <button type="button" id="surpriseBtn" class="btn ghost">Surprise me</button>
+        <button type="button" id="resetBtn" class="btn ghost">Start over</button>
+      </div>
+    </section>
+
+    <!-- ============ RIGHT: ORDER TICKET ============ -->
+    <aside class="ticket-col" aria-label="Order ticket">
+      <div class="ticket-wrap">
+        <article class="ticket" id="ticket">
+          <div class="stamp" aria-hidden="true">ORDER PLACED</div>
+          <h3>SIP &amp; STYLE</h3>
+          <p class="tk-sub">Order ticket</p>
+          <dl class="tk-meta">
+            <div><dt>No.</dt><dd id="tkNo">—</dd></div>
+            <div><dt>Date</dt><dd id="tkDate"></dd></div>
+            <div><dt>For</dt><dd id="tkFor">Guest</dd></div>
+          </dl>
+          <hr>
+          <ul id="tkLines" class="tk-lines"></ul>
+          <p id="tkNotes" class="tk-notes"></p>
+          <hr>
+          <dl class="tk-totals">
+            <div><dt>Subtotal</dt><dd id="tkSub"></dd></div>
+            <div><dt>GST 5%</dt><dd id="tkGst"></dd></div>
+            <div class="grand"><dt>Total</dt><dd id="tkTotal"></dd></div>
+          </dl>
+          <div class="barcode" aria-hidden="true"></div>
+          <label class="name-field">Name for the cup
+            <input type="text" id="custName" maxlength="18" placeholder="Your name">
+          </label>
+        </article>
+      </div>
+
+      <div class="ticket-actions">
+        <button type="button" id="recipeBtn" class="btn ghost">Recipe card</button>
+        <button type="button" id="orderBtn" class="btn primary">Place order</button>
+        <button type="button" id="rateBtn" class="btn ghost" disabled title="Place an order first">Rate your drink</button>
+      </div>
+      <button type="button" id="printBtn" class="link center">Print ticket</button>
+    </aside>
+  </main>
+
+  <!-- ============ REVIEWS ============ -->
+  <section class="reviews" id="reviews" aria-labelledby="reviewsTitle">
+    <div class="reviews-head">
+      <h2 id="reviewsTitle">Ratings &amp; feedback</h2>
+      <div class="reviews-tools">
+        <div class="chips" id="scopeChips" role="group" aria-label="Which reviews to show">
+          <button type="button" class="chip" data-scope="drink" aria-pressed="true">This drink</button>
+          <button type="button" class="chip" data-scope="all" aria-pressed="false">All drinks</button>
+        </div>
+        <label class="sort">Sort by
+          <select id="sortSelect">
+            <option value="newest">Newest</option>
+            <option value="high">Highest rated</option>
+            <option value="low">Lowest rated</option>
+          </select>
+        </label>
+      </div>
+    </div>
+
+    <div class="reviews-grid">
+      <div class="summary">
+        <div class="avg">
+          <span class="avg-num" id="avgNum">–</span>
+          <div>
+            <span class="stars" id="avgStars" style="--p:0" role="img" aria-label="Average rating"></span>
+            <p class="meta" id="avgCount"></p>
+          </div>
+        </div>
+        <p class="mine-line" id="myRating" hidden></p>
+        <div id="distBars" class="dist" role="group" aria-label="Filter reviews by stars"></div>
+        <button type="button" class="btn ghost wide feedback-open">Write a review</button>
+<button type="button" id="resetReviews" class="link">Reset to sample reviews</button>
+        <button type="button" id="resetReviews" class="link">Reset to sample reviews</button>
+      </div>
+
+      <div>
+        <div id="reviewList" class="review-list"></div>
+        <p id="noReviews" class="empty" hidden></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ RECIPE CARD POPUP ============ -->
+  <dialog id="recipeDialog" aria-labelledby="rcName">
+    <article class="recipe-card">
+      <button type="button" class="close" id="closeRecipe" aria-label="Close recipe card">×</button>
+      <div class="recipe-art" id="recipeArt"></div>
+      <div class="recipe-body">
+        <h2 id="rcName"></h2>
+        <p id="rcMeta" class="meta"></p>
+        <h3>Ingredients</h3>
+        <ul id="rcIngredients"></ul>
+        <h3>Method</h3>
+        <ol id="rcSteps"></ol>
+      </div>
+    </article>
+  </dialog>
+
+  <!-- ============ FEEDBACK POPUP ============ -->
+  <dialog id="feedbackDialog" aria-labelledby="fbTitle">
+    <form id="fbForm" class="fb-card" novalidate>
+      <button type="button" class="close" id="closeFeedback" aria-label="Close feedback form">×</button>
+      <h2 id="fbTitle">How was your drink?</h2>
+      <p class="meta" id="fbSub"></p>
+
+      <fieldset class="fb-block">
+        <legend>Your rating</legend>
+        <div class="star-input" role="radiogroup" aria-label="Rating from 1 to 5 stars">
+          <input type="radio" name="rating" id="st5" value="5"><label for="st5" title="5 stars">★</label>
+          <input type="radio" name="rating" id="st4" value="4"><label for="st4" title="4 stars">★</label>
+          <input type="radio" name="rating" id="st3" value="3"><label for="st3" title="3 stars">★</label>
+          <input type="radio" name="rating" id="st2" value="2"><label for="st2" title="2 stars">★</label>
+          <input type="radio" name="rating" id="st1" value="1"><label for="st1" title="1 star">★</label>
+        </div>
+        <p class="rating-text" id="ratingText">Tap a star</p>
+        <p class="error" id="fbError" role="alert" hidden>Pick a star rating to send your review.</p>
+      </fieldset>
+
+      <fieldset class="fb-block">
+        <legend>What stood out?</legend>
+        <div class="tag-row" id="fbTags"></div>
+      </fieldset>
+
+      <label class="fb-block" for="fbComment"><span class="legend-like">Anything else? (optional)</span></label>
+      <textarea id="fbComment" maxlength="200" rows="3" placeholder="Tell us how it tasted"></textarea>
+      <p class="counter" id="fbCount">0/200</p>
+
+      <button type="submit" class="btn primary wide">Send review</button>
+    </form>
+  </dialog>
+
+  <div id="toast" role="status" aria-live="polite"></div>
+
+  <!-- JavaScript linked here -->
+  <script src="script.js" defer></script>
+</body>
+</html>
